@@ -52,4 +52,39 @@ public class Renderable {
 	{
 		return this.zIndex;
 	}
+	
+	public void SetX(int x)
+	{
+		this.position.width = x;
+	}
+	
+	public void SetY(int y)
+	{
+		this.position.height = y;
+	}
+	
+	public void SetSizeX(int sizeX)
+	{
+		this.scale.width = sizeX;
+	}
+	
+	public void SetSizeY(int sizeY)
+	{
+		this.scale.height = sizeY;
+	}
+	
+	public void SetZIndex(int z)
+	{
+		this.zIndex = z;
+	}
+	
+	public void SetPosition(Dimension position)
+	{
+		this.position = position;
+	}
+	
+	public void SetScale(Dimension scale)
+	{
+		this.scale = scale;
+	}
 }

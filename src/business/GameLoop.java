@@ -8,8 +8,6 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * @author Evilion
@@ -27,11 +25,13 @@ public class GameLoop implements Runnable
 	//public Image offscreen; // Unneeded
 	public int counter, health=100, points=100, sizeX=10, sizeY=10, state=1; // Game variables
 	//public SpawnEnemy spawnEnemy; // Unneeded
-	public List<Renderable> allObjects = new LinkedList<Renderable>(); // Should be classified
+	//public List<Renderable> allObjects = new LinkedList<Renderable>(); // Should be classified
 	private boolean running = false; // Keeps the engine running
 	private int fps = 60; // Frames per second to be ticked and rendered
 	private RenderPanel panel; // Panel to invalidate after each tick to invoke rendering
 	private Dimension viewPort; // View port defines which area of the whole screne is rendered (x,y to canvas width,height)
+	private GameObjects gameObjects;
+	private Cursor cursor;
 	
 	public KeyInput KeyInput = new KeyInput();
 	
@@ -39,6 +39,7 @@ public class GameLoop implements Runnable
 	{
 		this.panel = panel;
 		this.viewPort = new Dimension(0, 0);
+		this.gameObjects = GameObjects.GetObjects();
 	}
 	
 	/**
@@ -53,6 +54,10 @@ public class GameLoop implements Runnable
 		
 		//spawnEnemy = new SpawnEnemy();
 		//ArrayList<Object> allObjectsList = new ArrayList<Object>();
+		
+		// Create unique GUI elements
+		this.cursor = new Cursor(x, y, 20, 20);
+		this.gameObjects.add(cursor);
 		
 		running = true;
 		while (running)
@@ -95,7 +100,7 @@ public class GameLoop implements Runnable
 		}
 		
 		if (counter == 3)
-			allObjects.addAll(Arrays.asList(Enemy.SpawnEnemies(eX, eY, health, points, sizeX, sizeY, 2)));
+			this.gameObjects.addAll(Arrays.asList(Enemy.SpawnEnemies(eX, eY, health, points, sizeX, sizeY, 2)));
 		
 		switch(counter)
 		{
@@ -108,6 +113,8 @@ public class GameLoop implements Runnable
 		Dimension movement = KeyInput.GetMovement();
 		x += movement.width * 2; // Two pixel per movement unit
 		y += movement.height * 2; // "
+		
+		cursor.SetPosition(new Dimension(x, y));
 	}
 	
 	/**
@@ -123,7 +130,7 @@ public class GameLoop implements Runnable
 		graphics.drawImage((BufferedImage)Resources.GetResources().GetResource("Background"), 0, 0, null);
 		
 		// Bring Z-Index in correct order
-		Collections.sort(allObjects, new Comparator<Renderable>() {
+		Collections.sort(this.gameObjects, new Comparator<Renderable>() {
 			@Override
 			public int compare(Renderable o1, Renderable o2) {
 				if (o1.GetZIndex() == o2.GetZIndex())
@@ -133,7 +140,7 @@ public class GameLoop implements Runnable
 			}
 		});
 		
-		for (Object item : allObjects)
+		for (Object item : this.gameObjects)
 		{
 			/*
 			System.out.println("Item: " + item); // This will cause problems
