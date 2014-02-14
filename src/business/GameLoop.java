@@ -87,6 +87,7 @@ public class GameLoop implements Runnable
 			
 			/* Engine work */
 			this.size = panel.getSize();
+			this.KeyInput.Tick();
 			tick();
 			
 			/* Graphics work */

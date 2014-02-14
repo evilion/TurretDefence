@@ -1,6 +1,8 @@
 package business;
 
 import java.awt.Dimension;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +20,8 @@ public class KeyInput {
 	 *        v 
 	 * -1,1| 0,1 |1,1      
 	 */
-	private Dimension mouseMovement = new Dimension(0, 0);
-	private boolean mouseMoved = false;
+	private Dimension movement = null;
+	private Point mouseMovement = null;
 	private boolean shooting = false;
 	
 	public void mousePressed(int buttonCode)
@@ -48,28 +50,41 @@ public class KeyInput {
 	
 	public void mouseMoved(int relativeX, int relativeY)
 	{
-		mouseMoved = true;
-		this.mouseMovement = new Dimension(relativeX, relativeY);
+		/*this.mouseMovement = new Dimension(relativeX, relativeY);
+		System.out.println("Detected movement: " + relativeX + "," + relativeY);*/
+	}
+	
+	/**
+	 * On tick, clear mouse vector to prevent stuck movement
+	 */
+	public void Tick()
+	{
+		this.movement = null;
 	}
 	
 	public Dimension GetMovement()
 	{
-		Dimension movement = new Dimension();
-		
-		if (pressedKeys.containsKey(KeyEvent.VK_UP) && pressedKeys.get(KeyEvent.VK_UP))
-			movement.height -= 1;
-		if (pressedKeys.containsKey(KeyEvent.VK_DOWN) && pressedKeys.get(KeyEvent.VK_DOWN))
-			movement.height += 1;
-		if (pressedKeys.containsKey(KeyEvent.VK_LEFT) && pressedKeys.get(KeyEvent.VK_LEFT))
-			movement.width -= 1;
-		if (pressedKeys.containsKey(KeyEvent.VK_RIGHT) && pressedKeys.get(KeyEvent.VK_RIGHT))
-			movement.width += 1;
-		
-		if (mouseMoved)
+		if (movement == null)
 		{
-			movement.height += this.mouseMovement.height;
-			movement.width += this.mouseMovement.width;
-			mouseMoved = false;
+			movement = new Dimension();
+			
+			if (pressedKeys.containsKey(KeyEvent.VK_UP) && pressedKeys.get(KeyEvent.VK_UP))
+				movement.height -= 1;
+			if (pressedKeys.containsKey(KeyEvent.VK_DOWN) && pressedKeys.get(KeyEvent.VK_DOWN))
+				movement.height += 1;
+			if (pressedKeys.containsKey(KeyEvent.VK_LEFT) && pressedKeys.get(KeyEvent.VK_LEFT))
+				movement.width -= 1;
+			if (pressedKeys.containsKey(KeyEvent.VK_RIGHT) && pressedKeys.get(KeyEvent.VK_RIGHT))
+				movement.width += 1;
+			
+			Point newPoint = null;
+			if (mouseMovement != null)
+			{
+				newPoint = MouseInfo.getPointerInfo().getLocation();
+				movement.width += newPoint.getX() - mouseMovement.getX();
+				movement.height += newPoint.getY() - mouseMovement.getY();
+			}
+			mouseMovement = newPoint == null ? MouseInfo.getPointerInfo().getLocation() : newPoint;
 		}
 		
 		return movement;
