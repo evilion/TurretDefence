@@ -6,14 +6,15 @@ public class Renderable {
 	private static int maximumObjectId = 0;
 	
 	protected Dimension position;
-	protected Dimension scale;
+	protected float scaleX, scaleY;
 	protected int zIndex;
 	protected int objectId;
 	
-	public Renderable(int x, int y, int sizeX, int sizeY, int zIndex)
+	public Renderable(int x, int y, float sizeX, float sizeY, int zIndex)
 	{
 		this.position = new Dimension(x, y);
-		this.scale = new Dimension(sizeX, sizeY);
+		this.scaleX = sizeX;
+		this.scaleY = sizeY;
 		this.zIndex = zIndex;
 		this.objectId = ++Renderable.maximumObjectId;
 	}
@@ -21,11 +22,6 @@ public class Renderable {
 	public Dimension GetPosition()
 	{
 		return this.position;
-	}
-	
-	public Dimension GetScale()
-	{
-		return this.scale;
 	}
 	
 	public int GetX()
@@ -38,14 +34,14 @@ public class Renderable {
 		return this.position.height;
 	}
 	
-	public int GetSizeX()
+	public float GetSizeX()
 	{
-		return this.scale.width;
+		return this.scaleX;
 	}
 	
-	public int GetSizeY()
+	public float GetSizeY()
 	{
-		return this.scale.height;
+		return this.scaleY;
 	}
 	
 	public int GetZIndex()
@@ -63,14 +59,14 @@ public class Renderable {
 		this.position.height = y;
 	}
 	
-	public void SetSizeX(int sizeX)
+	public void SetSizeX(float sizeX)
 	{
-		this.scale.width = sizeX;
+		this.scaleX = sizeX;
 	}
 	
-	public void SetSizeY(int sizeY)
+	public void SetSizeY(float sizeY)
 	{
-		this.scale.height = sizeY;
+		this.scaleY= sizeY;
 	}
 	
 	public void SetZIndex(int z)
@@ -81,10 +77,5 @@ public class Renderable {
 	public void SetPosition(Dimension position)
 	{
 		this.position = position;
-	}
-	
-	public void SetScale(Dimension scale)
-	{
-		this.scale = scale;
 	}
 }

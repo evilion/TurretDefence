@@ -5,7 +5,7 @@ public class LivingEntity extends ImageRenderable {
 	protected int points;
 	protected int state;
 	
-	public LivingEntity(int x, int y, int sizeX, int sizeY, int zIndex) {
+	public LivingEntity(int x, int y, float sizeX, float sizeY, int zIndex) {
 		super(x, y, sizeX, sizeY, zIndex);
 	}
 

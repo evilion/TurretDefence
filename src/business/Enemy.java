@@ -6,7 +6,7 @@ public class Enemy extends LivingEntity
 {
 	private static final int ZINDEX_LAYER = 4;
 	
-	public Enemy(int x, int y, int sizeX, int sizeY, int zIndex, int health, int points)
+	public Enemy(int x, int y, float sizeX, float sizeY, int zIndex, int health, int points)
 	{
 		super(x, y, sizeX, sizeY, zIndex);
 		
@@ -16,12 +16,12 @@ public class Enemy extends LivingEntity
 		this.points = points;
 	}
 
-	public static Enemy[] SpawnEnemies(int x, int y, int health, int points, int sizeX, int sizeY)
+	public static Enemy[] SpawnEnemies(int x, int y, int health, int points, float sizeX, float sizeY)
 	{
 		return SpawnEnemies(x, y, health, points, sizeX, sizeY, 1);
 	}
 	
-	public static Enemy[] SpawnEnemies(int x, int y, int health, int points, int sizeX, int sizeY, int amount)
+	public static Enemy[] SpawnEnemies(int x, int y, int health, int points, float sizeX, float sizeY, int amount)
 	{
 		Enemy[] enemies = new Enemy[amount];
 		for (int i = 0; i < amount; i++)
@@ -32,7 +32,7 @@ public class Enemy extends LivingEntity
 		return enemies;
 	}
 
-	private static Enemy SpawnOneEnemy(int x, int y, int health, int points, int sizeX, int sizeY)
+	public static Enemy SpawnOneEnemy(int x, int y, int health, int points, float sizeX, float sizeY)
 	{
 		Enemy enemy = new Enemy(x, y, sizeX, sizeY, ZINDEX_LAYER, health, points);
 		System.out.println("Spawned single enemy " + enemy.toString());

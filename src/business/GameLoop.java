@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * @author Evilion
@@ -122,8 +123,21 @@ public class GameLoop implements Runnable
 			counter = 0;
 		}
 		
-		//if (counter == 3)
-		//	this.gameObjects.addAll(Arrays.asList(Enemy.SpawnEnemies(eX, eY, health, points, sizeX, sizeY, 2)));
+		List<Enemy> enemies = this.gameObjects.GetObjectsByClass(Enemy.class);
+		if (enemies.size() == 0)
+		{
+			for (int i = 0; i < 2; i++)
+				this.gameObjects.add(Enemy.SpawnOneEnemy((int)(Math.random() * this.size.width), 0, health, points, .25f, .25f));
+		}
+		else
+		{
+			for (Enemy enemy : enemies)
+			{
+				enemy.SetY(enemy.GetY() + 1);
+				if (enemy.GetPosition().width > this.size.width || enemy.GetPosition().height > this.size.height)
+					this.gameObjects.remove(enemy);
+			}
+		}
 		
 		switch(counter)
 		{
@@ -178,7 +192,7 @@ public class GameLoop implements Runnable
 			{
 				// "Ingame" graphics (relative)
 				ImageRenderable renderable = (ImageRenderable)item;
-				graphics.drawImage(renderable.GetImage(), renderable.GetX() - viewPort.width, renderable.GetY() - viewPort.height, null);
+				graphics.drawImage(renderable.GetImage(), renderable.GetX() - viewPort.width, renderable.GetY() - viewPort.height, (int)(renderable.GetImage().getWidth() * renderable.GetSizeX()), (int)(renderable.GetImage().getHeight() * renderable.GetSizeY()), null);
 			}
 			else if (item instanceof GeometricRenderable)
 			{

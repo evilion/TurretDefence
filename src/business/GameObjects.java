@@ -30,14 +30,14 @@ public class GameObjects extends ArrayList<Renderable>
 		return null;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public ArrayList<Renderable> GetObjectsByClass(Class type)
+	@SuppressWarnings("unchecked")
+	public <T> ArrayList<T> GetObjectsByClass(Class<T> type)
 	{
-		ArrayList<Renderable> matches = new ArrayList<Renderable>();
+		ArrayList<T> matches = new ArrayList<T>();
 		
 		for (Renderable renderable : this)
-			if (renderable.getClass().isInstance(type))
-				matches.add(renderable);
+			if (renderable.getClass().isAssignableFrom(type))
+				matches.add((T)renderable);
 		
 		return matches;
 	}
