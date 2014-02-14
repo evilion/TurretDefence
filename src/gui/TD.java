@@ -4,12 +4,10 @@
 package gui;
 
 import java.applet.Applet;
-import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
 import business.GameLoop;
 
@@ -17,7 +15,7 @@ import business.GameLoop;
  * @author Evilion
  *
  */
-public class TD extends Applet implements KeyListener, MouseListener, MouseMotionListener {
+public class TD extends Applet implements KeyListener, MouseListener {
 	private static final long serialVersionUID = -20871060598428842L;
 	private Thread gameLoopThread;
 	private GameLoop gameLoop;
@@ -37,9 +35,7 @@ public class TD extends Applet implements KeyListener, MouseListener, MouseMotio
 		// Bind (localised) listener for controls
 		addKeyListener(this);
 		addMouseListener(this);
-		addMouseMotionListener(this);
 		this.renderPanel.addKeyListener(this);
-		this.renderPanel.addMouseMotionListener(this);
 		this.renderPanel.addMouseListener(this);
 
 		/*KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
@@ -67,9 +63,6 @@ public class TD extends Applet implements KeyListener, MouseListener, MouseMotio
 	@Override
 	public void keyTyped(KeyEvent arg0) {
 		// This is the problem when implementing events.
-	}
-	@Override
-	public void mouseDragged(MouseEvent arg0) {
 	}
 	@Override
 	public void mouseClicked(MouseEvent e) {
@@ -103,19 +96,5 @@ public class TD extends Applet implements KeyListener, MouseListener, MouseMotio
 	public void keyReleased(KeyEvent keyEvent)
 	{
 		gameLoop.KeyInput.keyReleased(keyEvent.getKeyCode());
-	}
-
-	private Dimension lastMousePosition;
-	
-	@Override
-	public void mouseMoved(MouseEvent e) {
-		if (lastMousePosition == null)
-		{
-			lastMousePosition = new Dimension(e.getX(), e.getY());
-			return;
-		}
-		
-		gameLoop.KeyInput.mouseMoved(e.getX() - lastMousePosition.width, e.getY() - lastMousePosition.height);
-		lastMousePosition = new Dimension(e.getX(), e.getY());
 	}
 }

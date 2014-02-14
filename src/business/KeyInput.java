@@ -4,12 +4,13 @@ import java.awt.Dimension;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
 public class KeyInput {
 	private Map<Integer, Boolean> pressedKeys = new HashMap<Integer, Boolean>();
-	//private Map<Integer, Boolean> pressedButtons = new HashMap<Integer, Boolean>();
+	private Map<Integer, Boolean> pressedButtons = new HashMap<Integer, Boolean>();
 	
 	/**
 	 * Movement vector pointing in the direction of movement.
@@ -22,14 +23,21 @@ public class KeyInput {
 	 */
 	private Dimension movement = null;
 	private Point mouseMovement = null;
-	private boolean shooting = false;
 	
 	public void mousePressed(int buttonCode)
 	{
+		if (pressedButtons.containsKey(buttonCode))
+			pressedButtons.remove(buttonCode);
+		
+		pressedButtons.put(buttonCode, true);
 	}
 	
 	public void mouseReleased(int buttonCode)
 	{
+		if (pressedButtons.containsKey(buttonCode))
+			pressedButtons.remove(buttonCode);
+		
+		pressedButtons.put(buttonCode, false);
 	}
 	
 	public void keyPressed(int keyCode)
@@ -46,12 +54,6 @@ public class KeyInput {
 			pressedKeys.remove(keyCode);
 		
 		pressedKeys.put(keyCode, false);
-	}
-	
-	public void mouseMoved(int relativeX, int relativeY)
-	{
-		/*this.mouseMovement = new Dimension(relativeX, relativeY);
-		System.out.println("Detected movement: " + relativeX + "," + relativeY);*/
 	}
 	
 	/**
@@ -92,6 +94,6 @@ public class KeyInput {
 	
 	public boolean IsShooting()
 	{
-		return this.shooting;
+		return this.pressedButtons.containsKey(MouseEvent.BUTTON1) && this.pressedButtons.get(MouseEvent.BUTTON1);
 	}
 }
