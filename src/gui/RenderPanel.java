@@ -20,12 +20,12 @@ public class RenderPanel extends Panel {
 		this.drawCallback = drawCallback;
 	}
 	
-	public void paint(Graphics graphics)
+	public void update(Graphics graphics)
 	{
 		Image offscreenImage = this.createImage(this.getWidth(), this.getHeight());
 		Graphics offscreenRenderer = offscreenImage.getGraphics(); // Double buffer
 		drawCallback.Draw(offscreenRenderer);
-		//this.paint(offscreenRenderer);
+		this.paint(offscreenRenderer);
 		graphics.drawImage(offscreenImage, 0, 0, this);
 	}
 }

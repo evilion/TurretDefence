@@ -1,17 +1,13 @@
 package business;
 
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 public class KeyInput {
-	// Note: These key codes do not need to represent actual Java key codes. This is the internal engine mapping!
-	public static final int KEY_UP = 38;
-	public static final int KEY_DOWN = 40;
-	public static final int KEY_LEFT = 37;
-	public static final int KEY_RIGHT = 39;
-	
-	public static final int BTN_LEFT = 1;
-	public static final int BTN_RIGHT = 2;
-	public static final int BTN_MIDDLE = 3;
+	private Map<Integer, Boolean> pressedKeys = new HashMap<Integer, Boolean>();
+	//private Map<Integer, Boolean> pressedButtons = new HashMap<Integer, Boolean>();
 	
 	/**
 	 * Movement vector pointing in the direction of movement.
@@ -22,47 +18,60 @@ public class KeyInput {
 	 *        v 
 	 * -1,1| 0,1 |1,1      
 	 */
-	private Dimension movement = new Dimension(0, 0);
+	private Dimension mouseMovement = new Dimension(0, 0);
+	private boolean mouseMoved = false;
 	private boolean shooting = false;
 	
 	public void mousePressed(int buttonCode)
 	{
-		if (buttonCode == BTN_LEFT)
-			this.shooting = true;
 	}
 	
 	public void mouseReleased(int buttonCode)
 	{
-		if (buttonCode == BTN_LEFT)
-			this.shooting = false;
 	}
 	
 	public void keyPressed(int keyCode)
 	{
-		if (keyCode == KEY_UP)
-			movement.height += 1;
-		if (keyCode == KEY_DOWN)
-			movement.height -= 1;
-		if (keyCode == KEY_LEFT)
-			movement.width -= 1;
-		if (keyCode == KEY_RIGHT)
-			movement.width += 1;
+		if (pressedKeys.containsKey(keyCode))
+			pressedKeys.remove(keyCode);
+		
+		pressedKeys.put(keyCode, true);
 	}
 	
 	public void keyReleased(int keyCode)
 	{
-		if (keyCode == KEY_UP)
-			movement.height -= 1;
-		if (keyCode == KEY_DOWN)
-			movement.height += 1;
-		if (keyCode == KEY_LEFT)
-			movement.width += 1;
-		if (keyCode == KEY_RIGHT)
-			movement.width -= 1;
+		if (pressedKeys.containsKey(keyCode))
+			pressedKeys.remove(keyCode);
+		
+		pressedKeys.put(keyCode, false);
+	}
+	
+	public void mouseMoved(int relativeX, int relativeY)
+	{
+		mouseMoved = true;
+		this.mouseMovement = new Dimension(relativeX, relativeY);
 	}
 	
 	public Dimension GetMovement()
 	{
+		Dimension movement = new Dimension();
+		
+		if (pressedKeys.containsKey(KeyEvent.VK_UP) && pressedKeys.get(KeyEvent.VK_UP))
+			movement.height -= 1;
+		if (pressedKeys.containsKey(KeyEvent.VK_DOWN) && pressedKeys.get(KeyEvent.VK_DOWN))
+			movement.height += 1;
+		if (pressedKeys.containsKey(KeyEvent.VK_LEFT) && pressedKeys.get(KeyEvent.VK_LEFT))
+			movement.width -= 1;
+		if (pressedKeys.containsKey(KeyEvent.VK_RIGHT) && pressedKeys.get(KeyEvent.VK_RIGHT))
+			movement.width += 1;
+		
+		if (mouseMoved)
+		{
+			movement.height += this.mouseMovement.height;
+			movement.width += this.mouseMovement.width;
+			mouseMoved = false;
+		}
+		
 		return movement;
 	}
 	

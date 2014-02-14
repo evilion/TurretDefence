@@ -4,6 +4,7 @@
 package gui;
 
 import java.applet.Applet;
+import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -11,7 +12,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
 import business.GameLoop;
-import business.KeyInput;
 
 /**
  * @author Evilion
@@ -26,21 +26,39 @@ public class TD extends Applet implements KeyListener, MouseListener, MouseMotio
 	public void init(){
 		// Set render size
 		setSize(854,480);
-		
+		setLayout(null);
 		
 		
 		// Initialise rendering panel, position and add to window
 		this.renderPanel = new RenderPanel();
-		this.renderPanel.setBounds(0, 0, this.getWidth(), this.getHeight());
-		this.add(this.renderPanel);
+		this.renderPanel.setSize(getWidth(), getHeight());
+		this.add(this.renderPanel, 0, 0);
 		
 		// Bind (localised) listener for controls
 		addKeyListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		this.renderPanel.addKeyListener(this);
+		this.renderPanel.addMouseMotionListener(this);
+		this.renderPanel.addMouseListener(this);
+
+		/*KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(
+				new KeyEventDispatcher() {
+					
+					@Override
+					public boolean dispatchKeyEvent(KeyEvent e) {
+						if (e.getID() == KeyEvent.KEY_PRESSED)
+							keyPressed(e);
+						if (e.getID() == KeyEvent.KEY_RELEASED)
+							keyReleased(e);
+						
+						return false;
+					}
+				});*/
 		
 		// Initialise and start gameloop
-		this.gameLoop = new GameLoop(this.renderPanel);
+		this.gameLoop = GameLoop.Instance();
+		this.gameLoop.Initialise(this.renderPanel);
 		this.renderPanel.Render(this.gameLoop);
 		this.gameLoopThread = new Thread(this.gameLoop);
 		this.gameLoopThread.start();
@@ -67,91 +85,37 @@ public class TD extends Applet implements KeyListener, MouseListener, MouseMotio
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		switch (e.getButton())
-		{
-		case MouseEvent.BUTTON1:
-			gameLoop.KeyInput.mousePressed(KeyInput.BTN_LEFT);
-			break;
-		case MouseEvent.BUTTON2:
-			gameLoop.KeyInput.mousePressed(KeyInput.BTN_RIGHT);
-			break;
-		case MouseEvent.BUTTON3:
-			gameLoop.KeyInput.mousePressed(KeyInput.BTN_MIDDLE);
-			break;
-		}
+		gameLoop.KeyInput.mousePressed(e.getButton());
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		switch (e.getButton())
-		{
-		case MouseEvent.BUTTON1:
-			gameLoop.KeyInput.mouseReleased(KeyInput.BTN_LEFT);
-			break;
-		case MouseEvent.BUTTON2:
-			gameLoop.KeyInput.mouseReleased(KeyInput.BTN_RIGHT);
-			break;
-		case MouseEvent.BUTTON3:
-			gameLoop.KeyInput.mouseReleased(KeyInput.BTN_MIDDLE);
-			break;
-		}
+		gameLoop.KeyInput.mouseReleased(e.getButton());
 	}
 
 	@Override
 	public void keyPressed(KeyEvent keyEvent)
 	{
-		// Any key configuration can be mapped (from game settings for example) to the engine mapping
-		// For example if you want to enable wasd and udlr, uncomment the cases.
-		switch (keyEvent.getKeyCode())
-		{
-		case KeyEvent.VK_LEFT:
-		//case KeyEvent.VK_A:
-			gameLoop.KeyInput.keyPressed(KeyInput.KEY_LEFT);
-			break;
-		case KeyEvent.VK_UP:
-		//case KeyEvent.VK_W:
-			gameLoop.KeyInput.keyPressed(KeyInput.KEY_UP);
-			break;
-		case KeyEvent.VK_RIGHT:
-		//case KeyEvent.VK_D:
-			gameLoop.KeyInput.keyPressed(KeyInput.KEY_RIGHT);
-			break;
-		case KeyEvent.VK_DOWN:
-		//case KeyEvent.VK_S:
-			gameLoop.KeyInput.keyPressed(KeyInput.KEY_DOWN);
-			break;
-		}
+		gameLoop.KeyInput.keyPressed(keyEvent.getKeyCode());
 	}
 
 	@Override
 	public void keyReleased(KeyEvent keyEvent)
 	{
-		// Any key configuration can be mapped (from game settings for example) to the engine mapping
-		// For example if you want to enable wasd and udlr, uncomment the cases.
-		switch (keyEvent.getKeyCode())
-		{
-		case KeyEvent.VK_LEFT:
-		//case KeyEvent.VK_A:
-			gameLoop.KeyInput.keyReleased(KeyInput.KEY_LEFT);
-			break;
-		case KeyEvent.VK_UP:
-		//case KeyEvent.VK_W:
-			gameLoop.KeyInput.keyReleased(KeyInput.KEY_UP);
-			break;
-		case KeyEvent.VK_RIGHT:
-		//case KeyEvent.VK_D:
-			gameLoop.KeyInput.keyReleased(KeyInput.KEY_RIGHT);
-			break;
-		case KeyEvent.VK_DOWN:
-		//case KeyEvent.VK_S:
-			gameLoop.KeyInput.keyReleased(KeyInput.KEY_DOWN);
-			break;
-		}
+		gameLoop.KeyInput.keyReleased(keyEvent.getKeyCode());
 	}
 
+	private Dimension lastMousePosition;
+	
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		/*x = e.getX()-10;
-		y = e.getY()-10;*/
+		if (lastMousePosition == null)
+		{
+			lastMousePosition = new Dimension(e.getX(), e.getY());
+			return;
+		}
+		
+		gameLoop.KeyInput.mouseMoved(e.getX() - lastMousePosition.width, e.getY() - lastMousePosition.height);
+		lastMousePosition = new Dimension(e.getX(), e.getY());
 	}
 }

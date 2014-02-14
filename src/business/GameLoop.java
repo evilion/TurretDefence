@@ -5,7 +5,6 @@ import gui.RenderPanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -15,6 +14,16 @@ import java.util.Comparator;
  */
 public class GameLoop implements Runnable
 {
+	private static GameLoop instance = null;
+	
+	public static GameLoop Instance()
+	{
+		if (instance == null)
+			instance = new GameLoop();
+		
+		return instance;
+	}
+	
 	/**
 	 * The following variable definitions *should* all be private.
 	 */
@@ -32,14 +41,25 @@ public class GameLoop implements Runnable
 	private Dimension viewPort; // View port defines which area of the whole screne is rendered (x,y to canvas width,height)
 	private GameObjects gameObjects;
 	private Cursor cursor;
+	private Dimension size;
 	
 	public KeyInput KeyInput = new KeyInput();
 	
-	public GameLoop(RenderPanel panel)
+	private GameLoop()
 	{
-		this.panel = panel;
 		this.viewPort = new Dimension(0, 0);
 		this.gameObjects = GameObjects.GetObjects();
+	}
+	
+	public Dimension GetSize()
+	{
+		return this.size;
+	}
+	
+	public void Initialise(RenderPanel panel)
+	{
+		this.panel = panel;
+		this.size = panel.getSize();
 	}
 	
 	/**
@@ -58,6 +78,7 @@ public class GameLoop implements Runnable
 		// Create unique GUI elements
 		this.cursor = new Cursor(x, y, 20, 20);
 		this.gameObjects.add(cursor);
+		this.gameObjects.add(new Stats());
 		
 		running = true;
 		while (running)
@@ -65,6 +86,7 @@ public class GameLoop implements Runnable
 			long timeBegin = System.currentTimeMillis();
 			
 			/* Engine work */
+			this.size = panel.getSize();
 			tick();
 			
 			/* Graphics work */
@@ -99,8 +121,8 @@ public class GameLoop implements Runnable
 			counter = 0;
 		}
 		
-		if (counter == 3)
-			this.gameObjects.addAll(Arrays.asList(Enemy.SpawnEnemies(eX, eY, health, points, sizeX, sizeY, 2)));
+		//if (counter == 3)
+		//	this.gameObjects.addAll(Arrays.asList(Enemy.SpawnEnemies(eX, eY, health, points, sizeX, sizeY, 2)));
 		
 		switch(counter)
 		{
@@ -114,7 +136,7 @@ public class GameLoop implements Runnable
 		x += movement.width * 2; // Two pixel per movement unit
 		y += movement.height * 2; // "
 		
-		cursor.SetPosition(new Dimension(x, y));
+		cursor.SetPosition(new Dimension(cursor.GetX() + movement.width * 2, cursor.GetY() + movement.height * 2));
 	}
 	
 	/**
@@ -126,8 +148,8 @@ public class GameLoop implements Runnable
 	 */
 	public void Draw(Graphics graphics)
 	{
-		graphics.clearRect(0, 0, 854, 480); // This should be dynamic
-		graphics.drawImage((BufferedImage)Resources.GetResources().GetResource("Background"), 0, 0, null);
+		//graphics.clearRect(0, 0, 854, 480); // This should be dynamic
+		graphics.drawImage((BufferedImage)Resources.GetResources().GetResource("Background"), 0, 0, 853, 480, null);
 		
 		// Bring Z-Index in correct order
 		Collections.sort(this.gameObjects, new Comparator<Renderable>() {
@@ -139,7 +161,7 @@ public class GameLoop implements Runnable
 				return o1.GetZIndex() < o2.GetZIndex() ? -1 : 1;
 			}
 		});
-		
+
 		for (Object item : this.gameObjects)
 		{
 			/*
@@ -151,13 +173,13 @@ public class GameLoop implements Runnable
 			System.out.println();
 			*/
 			
-			if (item.getClass().isInstance(ImageRenderable.class))
+			if (item instanceof ImageRenderable)
 			{
 				// "Ingame" graphics (relative)
 				ImageRenderable renderable = (ImageRenderable)item;
 				graphics.drawImage(renderable.GetImage(), renderable.GetX() - viewPort.width, renderable.GetY() - viewPort.height, null);
 			}
-			else if (item.getClass().isInstance(GeometricRenderable.class))
+			else if (item instanceof GeometricRenderable)
 			{
 				// "GUI" graphics (absolute)
 				GeometricRenderable renderable = (GeometricRenderable)item;
@@ -170,6 +192,7 @@ public class GameLoop implements Runnable
 		//d.drawImage(foreground,offscreen.getWidth(this)/2-foreground.getWidth()/2,offscreen.getHeight(this)-foreground.getHeight(),this);
 		//System.out.println("offscreen get width/2-foreground.getwidth/2 = " + (offscreen.getWidth(this)/2-foreground.getWidth()/2));
 		//System.out.println("offscreen get height-foreground.getHeight = " + (offscreen.getHeight(this)-foreground.getHeight()));
+
 		graphics.drawImage((BufferedImage)Resources.GetResources().GetResource("Foreground"), 271, 383, null);
 	}
 	
